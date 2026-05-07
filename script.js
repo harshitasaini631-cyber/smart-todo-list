@@ -58,3 +58,14 @@ function renderTasks() {
     taskList.appendChild(li);
   });
 }
+
+function toggleTask(id) {
+  tasks = tasks.map(function (task) {
+    if (task.id === id) {
+      return { ...task, completed: !task.completed };
+    }
+    return task;
+  });
+
+  renderTasks();
+}
