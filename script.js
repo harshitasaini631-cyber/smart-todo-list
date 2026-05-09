@@ -1,46 +1,49 @@
 const taskInput = document.getElementById("taskInput");
 const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
-const searchInput = document.getElementById("searchInput");
 const filterButtons = document.querySelectorAll(".filters button");
 
 let tasks = [];
+let currentFilter = "all";
 
-function addTask(){
-    const text = taskInput.value.trim();
+// Add task
+function addTask() {
+  const text = taskInput.value.trim();
 
-    if(text === ""){
-        alert("Please enter a task");
-        return;
-    } 
+  if (text === "") {
+    alert("Please enter a task");
+    return;
+  }
 
-    const newTask = {
-          id = Date.now(),
-          text = text,
-          completed = false,
+  const newTask = {
+    id: Date.now(),
+    text: text,
+    completed: false
+  };
 
-    };
+  tasks.push(newTask);
+  taskInput.value = "";
 
-    tasks.push(newTask);
-    taskInput.value = "";
-    renderTasks();
+  renderTasks();
 }
 
-// add task by clicking 
-addBtn.addEventListener("click", addTask);
-
-// add task also by enter key
-taskInput.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    addTask();
-  }
-});
-
-// rendertasks sync screen with data. updates ui everytime a change is
+// Show tasks on screen
 function renderTasks() {
   taskList.innerHTML = "";
 
-  tasks.forEach(function (task) {
+  let filteredTasks = tasks;
+
+  if (currentFilter === "completed") {
+    filteredTasks = tasks.filter(function (task) {
+      return task.completed;
+    });
+  } else if (currentFilter === "pending") {
+    filteredTasks = tasks.filter(function (task) {
+      return !task.completed;
+    });
+  }
+
+  filteredTasks.forEach(function (task) {
     const li = document.createElement("li");
 
     if (task.completed) {
@@ -59,6 +62,7 @@ function renderTasks() {
   });
 }
 
+// Mark complete / pending
 function toggleTask(id) {
   tasks = tasks.map(function (task) {
     if (task.id === id) {
@@ -70,6 +74,7 @@ function toggleTask(id) {
   renderTasks();
 }
 
+// Delete task
 function deleteTask(id) {
   tasks = tasks.filter(function (task) {
     return task.id !== id;
@@ -77,3 +82,21 @@ function deleteTask(id) {
 
   renderTasks();
 }
+
+// Add button click
+addBtn.addEventListener("click", addTask);
+
+// Enter key add
+taskInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    addTask();
+  }
+});
+
+// Filter buttons
+filterButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    currentFilter = button.dataset.filter;
+    renderTasks();
+  });
+});
