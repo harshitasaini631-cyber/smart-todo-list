@@ -2,9 +2,11 @@ const taskInput = document.getElementById("taskInput");
 const addBtn = document.getElementById("addBtn");
 const taskList = document.getElementById("taskList");
 const filterButtons = document.querySelectorAll(".filters button");
+const searchInput = document.getElementById("searchInput");
 
 let tasks = [];
 let currentFilter = "all";
+let searchText = "";
 
 // Add task
 function addTask() {
@@ -33,15 +35,21 @@ function renderTasks() {
 
   let filteredTasks = tasks;
 
-  if (currentFilter === "completed") {
-    filteredTasks = tasks.filter(function (task) {
-      return task.completed;
-    });
-  } else if (currentFilter === "pending") {
-    filteredTasks = tasks.filter(function (task) {
-      return !task.completed;
-    });
-  }
+if (currentFilter === "completed") {
+  filteredTasks = filteredTasks.filter(function (task) {
+    return task.completed;
+  });
+} else if (currentFilter === "pending") {
+  filteredTasks = filteredTasks.filter(function (task) {
+    return !task.completed;
+  });
+}
+
+if (searchText !== "") {
+  filteredTasks = filteredTasks.filter(function (task) {
+    return task.text.toLowerCase().includes(searchText);
+  });
+}
 
   filteredTasks.forEach(function (task) {
     const li = document.createElement("li");
@@ -99,4 +107,9 @@ filterButtons.forEach(function (button) {
     currentFilter = button.dataset.filter;
     renderTasks();
   });
+});
+
+searchInput.addEventListener("input", function () {
+  searchText = searchInput.value.toLowerCase();
+  renderTasks();
 });
