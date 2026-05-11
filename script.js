@@ -7,6 +7,18 @@ const searchInput = document.getElementById("searchInput");
 let tasks = [];
 let currentFilter = "all";
 let searchText = "";
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+function loadTasks() {
+  const storedTasks = localStorage.getItem("tasks");
+
+  if (storedTasks) {
+    tasks = JSON.parse(storedTasks);
+  }
+
+  renderTasks();
+}
 
 // Add task
 function addTask() {
@@ -16,6 +28,12 @@ function addTask() {
     alert("Please enter a task");
     return;
   }
+
+  tasks.push(newTask);
+  taskInput.value = "";
+
+  saveTasks();
+  renderTasks();
 
   const newTask = {
     id: Date.now(),
@@ -35,21 +53,21 @@ function renderTasks() {
 
   let filteredTasks = tasks;
 
-if (currentFilter === "completed") {
-  filteredTasks = filteredTasks.filter(function (task) {
-    return task.completed;
-  });
-} else if (currentFilter === "pending") {
-  filteredTasks = filteredTasks.filter(function (task) {
-    return !task.completed;
-  });
-}
+  if (currentFilter === "completed") {
+    filteredTasks = filteredTasks.filter(function (task) {
+      return task.completed;
+    });
+  } else if (currentFilter === "pending") {
+    filteredTasks = filteredTasks.filter(function (task) {
+      return !task.completed;
+    });
+  }
 
-if (searchText !== "") {
-  filteredTasks = filteredTasks.filter(function (task) {
-    return task.text.toLowerCase().includes(searchText);
-  });
-}
+  if (searchText !== "") {
+    filteredTasks = filteredTasks.filter(function (task) {
+      return task.text.toLowerCase().includes(searchText);
+    });
+  }
 
   filteredTasks.forEach(function (task) {
     const li = document.createElement("li");
@@ -76,6 +94,8 @@ function toggleTask(id) {
     if (task.id === id) {
       return { ...task, completed: !task.completed };
     }
+    saveTasks();
+    renderTasks();
     return task;
   });
 
@@ -86,8 +106,10 @@ function toggleTask(id) {
 function deleteTask(id) {
   tasks = tasks.filter(function (task) {
     return task.id !== id;
-  });
 
+  });
+  saveTasks();
+  renderTasks();
   renderTasks();
 }
 
@@ -113,3 +135,5 @@ searchInput.addEventListener("input", function () {
   searchText = searchInput.value.toLowerCase();
   renderTasks();
 });
+
+loadTasks();
