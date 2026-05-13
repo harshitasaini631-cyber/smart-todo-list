@@ -126,7 +126,15 @@ taskInput.addEventListener("keydown", function (e) {
 // Filter buttons
 filterButtons.forEach(function (button) {
   button.addEventListener("click", function () {
+
+    filterButtons.forEach(function (btn) {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
     currentFilter = button.dataset.filter;
+
     renderTasks();
   });
 });
