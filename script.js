@@ -7,9 +7,11 @@ const searchInput = document.getElementById("searchInput");
 let tasks = [];
 let currentFilter = "all";
 let searchText = "";
+
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
+
 function loadTasks() {
   const storedTasks = localStorage.getItem("tasks");
 
@@ -20,7 +22,6 @@ function loadTasks() {
   renderTasks();
 }
 
-// Add task
 function addTask() {
   const text = taskInput.value.trim();
 
@@ -28,12 +29,6 @@ function addTask() {
     alert("Please enter a task");
     return;
   }
-
-  tasks.push(newTask);
-  taskInput.value = "";
-
-  saveTasks();
-  renderTasks();
 
   const newTask = {
     id: Date.now(),
@@ -44,10 +39,10 @@ function addTask() {
   tasks.push(newTask);
   taskInput.value = "";
 
+  saveTasks();
   renderTasks();
 }
 
-// Show tasks on screen
 function renderTasks() {
   taskList.innerHTML = "";
 
@@ -69,6 +64,11 @@ function renderTasks() {
     });
   }
 
+  if (filteredTasks.length === 0) {
+    taskList.innerHTML = "<li>No tasks found</li>";
+    return;
+  }
+
   filteredTasks.forEach(function (task) {
     const li = document.createElement("li");
 
@@ -88,51 +88,46 @@ function renderTasks() {
   });
 }
 
-// Mark complete / pending
 function toggleTask(id) {
   tasks = tasks.map(function (task) {
     if (task.id === id) {
-      return { ...task, completed: !task.completed };
+      return {
+        ...task,
+        completed: !task.completed
+      };
     }
-    saveTasks();
-    renderTasks();
+
     return task;
   });
 
+  saveTasks();
   renderTasks();
 }
 
-// Delete task
 function deleteTask(id) {
   tasks = tasks.filter(function (task) {
     return task.id !== id;
-
   });
+
   saveTasks();
-  renderTasks();
   renderTasks();
 }
 
-// Add button click
 addBtn.addEventListener("click", addTask);
 
-// Enter key add
 taskInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     addTask();
   }
 });
 
-// Filter buttons
 filterButtons.forEach(function (button) {
   button.addEventListener("click", function () {
-
     filterButtons.forEach(function (btn) {
       btn.classList.remove("active");
     });
 
     button.classList.add("active");
-
     currentFilter = button.dataset.filter;
 
     renderTasks();
